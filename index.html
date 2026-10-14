@@ -1,0 +1,548 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Laboratorio R.E.C.E.T.A. · Clase 2</title>
+<meta name="description" content="Portal de entrega de la actividad individual de la Clase 2 (Ingeniería de Prompts) del Seminario de Ingeniería de Software con IA Generativa, UNIANDES.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500..800&family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0F2E2C; --ink2:#183F3B; --ink3:#0A2321;
+  --paper:#F1F4EE; --card:#FAFBF7; --line:#D6DED8;
+  --terra:#E8875D; --terra2:#F09A72; --terraD:#A64B24;
+  --sea:#7CC6B6; --seaD:#1E6F64; --soft:#BFD6D1; --mute:#5E716D; --text:#15302D; --body:#3E5450;
+  --ok:#1E6F64; --mid:#B7791F; --bad:#B4432A;
+  --serif:"Source Serif 4",Georgia,serif; --sans:"IBM Plex Sans","Segoe UI",Arial,sans-serif; --mono:"JetBrains Mono",Consolas,monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}
+body{margin:0;background:var(--paper);color:var(--text);font-family:var(--sans);font-size:17px;line-height:1.55}
+h1,h2,h3{font-family:var(--serif);margin:0;line-height:1.1}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--terra);outline-offset:2px}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+
+/* HERO */
+.hero{background:radial-gradient(900px 500px at 85% -10%,rgba(124,198,182,.22),transparent 60%),radial-gradient(700px 400px at 0% 110%,rgba(232,135,93,.25),transparent 60%),var(--ink);color:#F1F4EE;padding:34px 0 0;position:relative;overflow:hidden}
+.brand{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;font-size:14px;color:var(--soft)}
+.brand b{color:var(--terra2);letter-spacing:.04em}
+.pill{border:1px solid rgba(191,214,209,.35);border-radius:999px;padding:5px 12px}
+.hero h1{font-size:clamp(38px,7vw,78px);font-weight:800;margin-top:26px;letter-spacing:-.01em}
+.hero h1 em{color:var(--terra2);font-style:normal}
+.hero p.lead{color:var(--soft);font-size:clamp(17px,2.2vw,21px);max-width:62ch;margin:14px 0 0}
+.tiles{display:flex;gap:10px;margin:28px 0 30px;flex-wrap:wrap}
+.tile{width:clamp(48px,11vw,86px);aspect-ratio:1;border-radius:16px;display:grid;place-items:center;font-family:var(--serif);font-weight:800;font-size:clamp(28px,6vw,50px);color:var(--ink);position:relative;animation:pop .6s cubic-bezier(.2,1.4,.4,1) both}
+.tile small{position:absolute;bottom:6px;font-family:var(--sans);font-size:clamp(8px,1.6vw,11px);font-weight:600;letter-spacing:.02em;opacity:.8}
+.tile.t1{background:var(--terra2)}.tile.t2{background:var(--terra2);animation-delay:.06s}.tile.t3{background:var(--terra2);animation-delay:.12s}
+.tile.t4{background:var(--sea);animation-delay:.18s}.tile.t5{background:var(--sea);animation-delay:.24s}.tile.t6{background:var(--sea);animation-delay:.3s}
+@keyframes pop{from{transform:translateY(18px) scale(.7);opacity:0}to{transform:none;opacity:1}}
+.tabs{display:flex;gap:6px;margin-top:6px}
+.tab{background:transparent;border:0;color:var(--soft);padding:14px 18px;border-radius:14px 14px 0 0;font-weight:600;cursor:pointer;font-size:16px}
+.tab[aria-selected="true"]{background:var(--paper);color:var(--ink)}
+.demo{background:#FFF4CC;color:#5C4400;border:1px solid #E5C766;border-radius:12px;padding:10px 14px;font-size:14px;margin:18px 0 0;display:none}
+
+/* FORM */
+main{padding:26px 0 70px}
+.step{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:22px;margin-bottom:16px;position:relative}
+.step h2{font-size:24px;display:flex;align-items:center;gap:12px}
+.num{flex:none;width:36px;height:36px;border-radius:50%;background:var(--ink);color:var(--terra2);display:grid;place-items:center;font-family:var(--serif);font-size:19px}
+.hint{color:var(--mute);font-size:14.5px;margin:6px 0 12px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+label.f{display:block;font-weight:600;font-size:14.5px;margin-bottom:5px}
+input[type=text],select,textarea{width:100%;background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;font-size:16px}
+textarea{min-height:120px;resize:vertical;line-height:1.5}
+textarea.code{font-family:var(--mono);font-size:14.5px;min-height:230px}
+input:focus,select:focus,textarea:focus{border-color:var(--seaD);outline:none;box-shadow:0 0 0 3px rgba(30,111,100,.15)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:10px}
+.btn{border:0;border-radius:12px;padding:10px 16px;font-weight:600;cursor:pointer;background:var(--ink);color:#F1F4EE;font-size:15px}
+.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--ink)}
+.btn.big{font-size:19px;padding:16px 26px;border-radius:16px;background:linear-gradient(135deg,var(--terraD),var(--terra));box-shadow:0 10px 24px -10px rgba(166,75,36,.7)}
+.btn:disabled{opacity:.6;cursor:wait}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.chip{display:flex;align-items:center;gap:8px;border-radius:999px;padding:6px 12px 6px 6px;font-size:13.5px;font-weight:600;background:#E9EEEA;color:var(--mute);border:1.5px solid transparent;transition:.25s}
+.chip i{font-style:normal;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:#D6DED8;color:var(--ink);font-family:var(--serif);font-weight:800}
+.chip.presente{background:#DFF2EC;color:var(--ok);border-color:#9BD3C4}.chip.presente i{background:var(--seaD);color:#fff}
+.chip.débil{background:#FFF1D6;color:#8A5A00;border-color:#EBC77A}.chip.débil i{background:#E3A93A;color:#fff}
+.checks{display:grid;gap:8px;margin-top:6px}
+.checks label{display:flex;gap:10px;align-items:flex-start;background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:10px 12px;cursor:pointer;font-size:15.5px}
+.checks input{width:20px;height:20px;margin-top:2px;accent-color:var(--seaD);flex:none}
+.checks .grp{font-size:13px;font-weight:700;color:var(--terraD);margin:6px 0 0;letter-spacing:.03em}
+.selfscore{font-family:var(--serif);font-size:30px;color:var(--ink)}
+.priv{font-size:13px;color:var(--mute);margin-top:12px}
+.err{color:var(--bad);font-weight:600;font-size:14.5px;min-height:1.2em;margin-top:8px}
+
+/* RESULTS */
+#resultados{display:none}
+.resHead{background:var(--ink);color:#F1F4EE;border-radius:24px;padding:26px;display:grid;grid-template-columns:auto 1fr;gap:26px;align-items:center;position:relative;overflow:hidden}
+.ring{width:170px;height:170px;position:relative}
+.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring .v{position:absolute;inset:0;display:grid;place-items:center;text-align:center}
+.ring .v b{font-family:var(--serif);font-size:54px;line-height:1}
+.ring .v span{display:block;font-size:13px;color:var(--soft)}
+.resHead h2{font-size:clamp(26px,4vw,38px)}
+.resHead p{color:var(--soft);margin:8px 0 0}
+.compare{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.compare div{background:var(--ink2);border-radius:12px;padding:10px 14px;font-size:14px;color:var(--soft)}
+.compare b{display:block;font-family:var(--serif);font-size:24px;color:#F1F4EE}
+.sendState{margin-top:14px;font-size:14.5px;font-weight:600;border-radius:10px;padding:8px 12px;display:inline-block}
+.sendState.ok{background:#DFF2EC;color:var(--ok)}.sendState.wait{background:#FFF1D6;color:#8A5A00}.sendState.bad{background:#FBE1DA;color:var(--bad)}
+.letters{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px}
+.lc{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;border-top:6px solid #C9D3CD}
+.lc.presente{border-top-color:var(--seaD)}.lc.débil{border-top-color:#E3A93A}.lc.ausente{border-top-color:var(--bad)}
+.lc .L{display:flex;align-items:center;gap:10px}
+.lc .L b{font-family:var(--serif);font-size:34px;line-height:1;color:var(--ink)}
+.lc .L span{font-weight:700}
+.lc .st{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-top:6px}
+.lc.presente .st{color:var(--ok)}.lc.débil .st{color:#8A5A00}.lc.ausente .st{color:var(--bad)}
+.lc p{font-size:14.5px;color:var(--body);margin:6px 0 0}
+.extra{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px}
+.ex{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px;font-size:14.5px}
+.ex b{display:block;font-size:15.5px;margin-bottom:4px}
+.ex.ok b{color:var(--ok)}.ex.no b{color:var(--bad)}
+.tips{background:#FFF4E8;border:1px solid #F2C9A8;border-radius:18px;padding:18px 20px;margin-top:16px}
+.tips h3{font-size:21px;color:var(--terraD)}
+.tips ol{margin:8px 0 0;padding-left:20px}
+.tips li{margin:6px 0}
+
+/* PANEL */
+#panel{display:none}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.kpi{background:var(--ink);color:#F1F4EE;border-radius:18px;padding:16px}
+.kpi b{font-family:var(--serif);font-size:40px;display:block;line-height:1.05;color:var(--terra2)}
+.kpi span{font-size:13.5px;color:var(--soft)}
+.pgrid{display:grid;grid-template-columns:1.2fr 1fr;gap:14px;margin-top:14px}
+.box{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px}
+.box h3{font-size:21px;margin-bottom:10px}
+.bar{display:grid;grid-template-columns:120px 1fr 48px;gap:10px;align-items:center;margin:9px 0;font-size:14.5px}
+.bar .t{height:22px;background:#E3EBE5;border-radius:999px;overflow:hidden}
+.bar .t i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,var(--seaD),var(--sea));transition:width .8s cubic-bezier(.2,.8,.2,1)}
+.bar.terra .t i{background:linear-gradient(90deg,var(--terraD),var(--terra2))}
+.bar output{font-family:var(--mono);font-size:13.5px;text-align:right}
+.hist{display:flex;align-items:flex-end;gap:5px;height:150px;margin-top:8px}
+.hist div{flex:1;background:var(--terra2);border-radius:6px 6px 0 0;position:relative;min-height:2px;transition:height .8s}
+.hist div span{position:absolute;bottom:-20px;left:0;right:0;text-align:center;font-size:11.5px;color:var(--mute)}
+.hist div em{position:absolute;top:-18px;left:0;right:0;text-align:center;font-size:11.5px;font-style:normal;color:var(--ink);font-weight:700}
+table.g{width:100%;border-collapse:collapse;font-size:14.5px}
+table.g th,table.g td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line)}
+table.g th{font-size:12.5px;color:var(--mute);text-transform:uppercase;letter-spacing:.05em}
+.upd{font-size:13px;color:var(--mute);margin-top:10px}
+footer{color:var(--mute);font-size:13px;padding:0 0 30px}
+
+@media (max-width:760px){
+  .grid2,.letters,.extra,.pgrid{grid-template-columns:1fr}
+  .kpis{grid-template-columns:1fr 1fr}
+  .resHead{grid-template-columns:1fr;justify-items:center;text-align:center}
+  .compare{justify-content:center}
+  .ring{width:150px;height:150px}
+  .step{padding:18px}
+  .tab{padding:12px 12px;font-size:15px}
+}
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="wrap">
+    <div class="brand"><span><b>UNIANDES</b> · Carrera de Software · Seminario de IA Generativa</span><span class="pill" id="claseTag">Clase 2 · Ingeniería de Prompts</span></div>
+    <h1>Laboratorio <em>R.E.C.E.T.A.</em></h1>
+    <p class="lead">Escriba su prompt, péguelo con su mejor historia de usuario y reciba al instante el diagnóstico de cada letra. Su entrega le llega al docente automáticamente.</p>
+    <div class="tiles" aria-hidden="true">
+      <div class="tile t1">R<small>Rol</small></div><div class="tile t2">E<small>Escenario</small></div><div class="tile t3">C<small>Consigna</small></div>
+      <div class="tile t4">E<small>Ejemplos</small></div><div class="tile t5">T<small>Tipo</small></div><div class="tile t6">A<small>Acotac.</small></div>
+    </div>
+    <div class="tabs" role="tablist">
+      <button class="tab" role="tab" id="tabEntrega" aria-selected="true" aria-controls="vEntrega">✍️ Entregar mi ejercicio</button>
+      <button class="tab" role="tab" id="tabPanel" aria-selected="false" aria-controls="panel">📊 Panel de la clase</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="demo" id="demoBanner"><b>Modo demostración:</b> este portal todavía no está conectado a Google Sheets. El análisis funciona, pero las entregas se guardan solo en este navegador.</div>
+
+  <!-- ================= ENTREGA ================= -->
+  <section id="vEntrega" role="tabpanel" aria-labelledby="tabEntrega">
+    <form id="form" novalidate>
+      <div class="step">
+        <h2><span class="num">1</span>Sus datos</h2>
+        <p class="hint">La clave de la clase la dicta el docente al inicio de la actividad.</p>
+        <div class="grid2">
+          <div><label class="f" for="nombre">Nombre y apellido</label><input type="text" id="nombre" autocomplete="name" maxlength="120" required></div>
+          <div><label class="f" for="grupo">Grupo y caso</label><select id="grupo" required><option value="">Elija su grupo…</option></select></div>
+          <div><label class="f" for="clave">Clave de la clase</label><input type="text" id="clave" autocomplete="off" maxlength="40" required style="text-transform:uppercase"></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <h2><span class="num">2</span>La necesidad del usuario</h2>
+        <p class="hint">Un problema real de los usuarios de su caso, en una o dos frases, como lo diría el propio usuario.</p>
+        <textarea id="necesidad" maxlength="1000" placeholder="Ej.: Los clientes nos escriben por correo y a veces un problema grave se queda dos días sin respuesta porque nadie lo vio."></textarea>
+        <div class="row"><button type="button" class="btn ghost" id="usarEjemplo">Usar la necesidad de ejemplo de mi grupo</button></div>
+      </div>
+
+      <div class="step">
+        <h2><span class="num">3</span>Su prompt R.E.C.E.T.A.</h2>
+        <p class="hint">Escríbalo en Gemini, ChatGPT o Claude y péguelo aquí completo. Las letras se encienden mientras escribe.</p>
+        <textarea id="prompt" class="code" maxlength="6000" placeholder="Actúas como … de …&#10;El resultado lo usará … para …&#10;Redacta 3 historias de usuario para la necesidad entre <necesidad>…"></textarea>
+        <div class="chips" id="liveChips" aria-live="polite"></div>
+        <div class="row"><button type="button" class="btn ghost" id="copiarPlantilla">📋 Copiar la plantilla</button><span class="hint" id="copiado" style="margin:0"></span></div>
+      </div>
+
+      <div class="step">
+        <h2><span class="num">4</span>Su mejor historia de usuario</h2>
+        <p class="hint">Pegue la mejor historia que obtuvo, con sus criterios Gherkin (Dado / Cuando / Entonces), ya revisada y corregida por usted.</p>
+        <textarea id="historia" maxlength="6000" placeholder="Como técnico de soporte, quiero ver primero los tickets de prioridad Alta, para atenderlos en menos de 1 hora.&#10;&#10;Escenario: ticket que impide facturar&#10;Dado un ticket que dice «no puedo emitir facturas»&#10;Cuando el sistema lo clasifica&#10;Entonces la prioridad es Alta"></textarea>
+        <div class="chips" id="liveHist" aria-live="polite"></div>
+      </div>
+
+      <div class="step">
+        <h2><span class="num">5</span>Autoevaluación</h2>
+        <p class="hint">Marque solo lo que de verdad cumple. Un punto por casilla.</p>
+        <div class="checks" id="checks"></div>
+        <div class="row"><span>Su puntaje:</span><span class="selfscore" id="selfScore">0 / 10</span></div>
+      </div>
+
+      <div class="row" style="justify-content:center;margin-top:8px">
+        <button type="submit" class="btn big" id="enviar">🚀 Analizar y enviar</button>
+      </div>
+      <p class="err" id="error" role="alert"></p>
+      <p class="priv">Protección de datos: su nombre y grupo se usan solo para registrar esta actividad del seminario. El panel de la clase muestra resultados agregados, sin nombres.</p>
+    </form>
+
+    <!-- ================= RESULTADOS ================= -->
+    <section id="resultados" aria-live="polite">
+      <div class="resHead">
+        <div class="ring" id="ring"></div>
+        <div>
+          <h2 id="resTitulo">Su diagnóstico</h2>
+          <p id="resTexto"></p>
+          <div class="compare" id="compare"></div>
+          <div class="sendState wait" id="sendState">Enviando su entrega…</div>
+        </div>
+      </div>
+      <div class="letters" id="letters"></div>
+      <div class="extra" id="extra"></div>
+      <div class="tips" id="tips"></div>
+      <div class="row" style="justify-content:center;margin-top:18px">
+        <button class="btn ghost" id="mejorar">✏️ Mejorar y volver a enviar</button>
+        <button class="btn" id="verPanel">📊 Ver el panel de la clase</button>
+      </div>
+    </section>
+  </section>
+
+  <!-- ================= PANEL ================= -->
+  <section id="panel" role="tabpanel" aria-labelledby="tabPanel">
+    <div class="kpis">
+      <div class="kpi"><b id="kPersonas">–</b><span>estudiantes entregaron</span></div>
+      <div class="kpi"><b id="kProm">–</b><span>puntaje promedio del portal</span></div>
+      <div class="kpi"><b id="kAuto">–</b><span>autoevaluación promedio</span></div>
+      <div class="kpi"><b id="kGher">–</b><span>usan Gherkin completo</span></div>
+    </div>
+    <div class="pgrid">
+      <div class="box"><h3>¿Qué letras domina la clase?</h3><div id="pLetras"></div></div>
+      <div class="box"><h3>Distribución de puntajes</h3><div class="hist" id="pHist"></div><div style="height:24px"></div></div>
+    </div>
+    <div class="box" style="margin-top:14px"><h3>Por grupo</h3><table class="g"><thead><tr><th>Grupo</th><th>Caso</th><th>Entregas</th><th>Promedio</th></tr></thead><tbody id="pGrupos"></tbody></table>
+      <p class="upd" id="pUpd">Cargando…</p></div>
+  </section>
+</main>
+<footer class="wrap">Seminario Ingeniería de Software con IA Generativa · Carrera de Software · UNIANDES · Octubre de 2026</footer>
+
+<script>
+/* ================== CONFIGURACIÓN ==================
+   Pegue aquí la URL de la aplicación web de Google Apps Script (termina en /exec).
+   Si queda vacía, el portal funciona en modo demostración. */
+const CONFIG = {
+  ENDPOINT: "https://script.google.com/macros/s/AKfycbwRgnpr8Ti_ApkxBHFucfxK-N5JyE2nIg5lCMjibSLybvgkQzsclDNcVOFYdg1zDjuf/exec",
+  REFRESCO_PANEL_SEG: 20
+};
+
+const CASOS = [
+  ["1","Titulación","Los estudiantes no saben qué requisitos les faltan para graduarse y preguntan lo mismo una y otra vez en secretaría."],
+  ["2","Reclamos de consumo","Cuando compro algo defectuoso no sé cómo redactar el reclamo ni a quién dirigirlo."],
+  ["3","Triaje de soporte PYME","Los clientes nos escriben por correo y a veces un problema grave se queda dos días sin respuesta porque nadie lo vio."],
+  ["4","Planificador turístico","Los turistas no saben cómo organizar dos días con su presupuesto y se pierden lo mejor del lugar."],
+  ["5","Dengue","La gente no sabe distinguir cuándo una fiebre puede ser dengue grave y llega tarde al centro de salud."],
+  ["6","Pliegos SERCOP","Leer un pliego de contratación pública nos toma horas y a veces se nos pasa un requisito y nos descalifican."],
+  ["7","Calculadora laboral","Los trabajadores no saben calcular cuánto les deben pagar cuando renuncian o los despiden."],
+  ["8","Simulador vial","Los aspirantes a licencia memorizan las preguntas, pero no entienden la ley y repiten el examen."],
+  ["9","Cacao","Los productores no saben qué hacer cuando ven una enfermedad en las mazorcas y pierden parte de la cosecha."],
+  ["10","Revisor de código seguro","Subimos código con errores de seguridad porque nadie tiene tiempo de revisar cada cambio."],
+  ["11","Calendario tributario RIMPE","Los negocios pequeños se olvidan de las fechas de declaración del SRI y pagan multas."]
+];
+
+const PLANTILLA = `Actúas como [rol con trabajo concreto] de [tipo de organización de su caso].
+El resultado lo usará [quién] para [qué].
+Redacta 3 historias de usuario para la necesidad entre <necesidad>. Cada una debe poder implementarse y probarse en menos de 3 días.
+Ejemplo de formato: Como [usuario], quiero [acción], para [beneficio].
+Para cada historia, escribe 2 criterios de aceptación en Gherkin (Dado / Cuando / Entonces).
+Usa solo la necesidad descrita. No agregues funciones que no estén ahí. Si falta información, escribe FALTA: y qué falta.
+
+<necesidad>
+[pegue aquí la necesidad del usuario]
+</necesidad>`;
+
+const AUTOCHECK = [
+  ["Su prompt", ["Rol con trabajo concreto","Escenario: usuario y propósito","Consigna con criterio de éxito","Al menos un ejemplo de formato","Tipo de salida explícito","Permiso para escribir FALTA"]],
+  ["El resultado", ["Historias pequeñas e independientes","Criterios verificables con Dado, Cuando, Entonces","Ninguna función inventada fuera de la necesidad","Usted revisó y corrigió al menos una línea"]]
+];
+
+const LETRAS = [
+  {k:"R", n:"Rol", tip:"Diga qué trabajo hace el modelo y para qué organización: «Actúas como analista de sistemas de una PYME que…». «Eres un experto» no basta."},
+  {k:"E", n:"Escenario", tip:"Cuente quién usará la respuesta y para qué: «El resultado lo usará el equipo de desarrollo para planificar el sprint»."},
+  {k:"C", n:"Consigna", tip:"Use un verbo concreto y un criterio comprobable: «Redacta 3 historias… cada una debe probarse en menos de 3 días»."},
+  {k:"E2", n:"Ejemplos", L:"E", tip:"Agregue una muestra del formato: «Ejemplo: Como técnico, quiero…, para…»."},
+  {k:"T", n:"Tipo de salida", tip:"Pida un formato exacto: «2 criterios en Gherkin (Dado / Cuando / Entonces)» o «una tabla con columnas…»."},
+  {k:"A", n:"Acotaciones", tip:"Ponga límites y permiso para no saber: «Usa solo la necesidad descrita… Si falta información, escribe FALTA»."}
+];
+
+/* ================== ANÁLISIS ================== */
+const norm = s => (s||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"");
+const has = (t, re) => re.test(t);
+
+function analizarPrompt(p){
+  const t = norm(p);
+  const L = {};
+  // R · Rol
+  const rolFuerte = /(actuas|actua|trabajas|funcionas) como\s+\S+(\s+\S+){1,}/.test(t) || /(tu rol|tu papel) (es|sera)\s+\S+/.test(t) || /eres (un|una)\s+(?!experto|experta|asistente util)\S+(\s+\S+){2,}/.test(t);
+  const rolDebil = /eres (un|una) (experto|experta)|actua como experto|rol\b/.test(t);
+  L.R = rolFuerte ? "presente" : (rolDebil ? "débil" : "ausente");
+  // E · Escenario
+  const e1 = /(usuari|client|equipo|empresa|pyme|institucion|ciudadan|estudiant|productor|negocio|tecnic|paciente|familia|trabajador|emprendedor|turista|desarrollador|docente|municip)/.test(t);
+  const e2 = /(lo (usara|leera|consumira|recibira)|la (usara|leera|recibira)|lo usan|sera (usad|leid)|para que|servira|el resultado|la respuesta (la|lo)|se usara|backend|aplicacion|sistema)/.test(t);
+  L.E = (e1 && e2) ? "presente" : ((e1 || e2) ? "débil" : "ausente");
+  // C · Consigna
+  const verbo = /\b(redacta|clasifica|genera|escribe|extrae|lista|enumera|crea|resume|compara|identifica|propon|elabora|disena|analiza|convierte|describe|evalua)\b/.test(t);
+  const criterio = /(\d+|tres|dos|cinco)\s+(historias|criterios|casos|ideas|opciones|items|puntos)|cada una|cada historia|debe(n)? (poder|ser|tener)|solo si|menos de|maximo|al menos|exactamente|no mas de/.test(t);
+  L.C = (verbo && criterio) ? "presente" : (verbo ? "débil" : "ausente");
+  // E · Ejemplos
+  const ej = /ejemplo/.test(t);
+  const ejFormato = /ejemplo[^\n]{0,40}(:|como)[^\n]{0,200}(quiero|dado|\|)/.test(t) || /como [^\n]{3,60},? quiero [^\n]{3,}/.test(t);
+  L.E2 = (ej && ejFormato) ? "presente" : ((ej || ejFormato) ? "débil" : "ausente");
+  // T · Tipo de salida
+  const tF = /(gherkin|dado\s*\/\s*cuando|dado, cuando|tabla|json|columnas|formato|esquema|markdown)/.test(t);
+  const tD = /(lista|vinetas|parrafo|breve|corto|resumen)/.test(t);
+  L.T = tF ? "presente" : (tD ? "débil" : "ausente");
+  // A · Acotaciones
+  const a1 = /(falta|no lo se|si no sabes|si no estas segur|no inventes|indica que no)/.test(t);
+  const a2 = /(usa solo|utiliza solo|solo (el|la|los|las|con|usa)|no agregues|no anadas|limitate|unicamente|no incluyas)/.test(t);
+  L.A = (a1 && a2) ? "presente" : ((a1 || a2) ? "débil" : "ausente");
+  const delim = /<\s*[a-z_]+\s*>[\s\S]*<\s*\/\s*[a-z_]+\s*>/.test(t) || /"""|```|###/.test(p||"");
+  return {letras:L, delimitadores:delim, falta:a1};
+}
+
+function analizarHistoria(h){
+  const t = norm(h);
+  const formato = /como\s+[^\n]{2,}?,?\s*quiero\s+[^\n]{2,}?,?\s*para\s+\S+/.test(t);
+  const dado = (t.match(/\bdado\b/g)||[]).length, cuando=(t.match(/\bcuando\b/g)||[]).length, entonces=(t.match(/\bentonces\b/g)||[]).length;
+  const gherkin = dado>0 && cuando>0 && entonces>0;
+  const escenarios = Math.min(dado, cuando, entonces);
+  return {formato, gherkin, escenarios, falta:/\bfalta\b/.test(t)};
+}
+
+function puntaje(ap, ah, necesidadEnPrompt){
+  const val = {"presente":1,"débil":0.5,"ausente":0};
+  let s = Object.values(ap.letras).reduce((a,v)=>a+val[v],0);  // máx. 6
+  s += ah.gherkin ? 1.5 : (ah.escenarios>0 ? 0.75 : 0);      // 1,5
+  s += ah.formato ? 1 : 0;                                       // 1
+  s += ap.delimitadores ? 0.5 : 0;                               // 0,5
+  s += necesidadEnPrompt ? 1 : 0;                                // 1
+  return Math.round(Math.min(10,s)*10)/10;
+}
+
+/* ================== UI ================== */
+const $ = s => document.querySelector(s);
+const el = (t,a={},txt) => { const e=document.createElement(t); for(const k in a){ if(k==="class") e.className=a[k]; else if(k==="html") e.innerHTML=a[k]; else e.setAttribute(k,a[k]); } if(txt!=null) e.textContent=txt; return e; };
+const DEMO = !CONFIG.ENDPOINT;
+if (DEMO) $("#demoBanner").style.display = "block";
+
+// Grupos
+CASOS.forEach(c => $("#grupo").appendChild(el("option",{value:c[0]},`Grupo ${c[0]} · ${c[1]}`)));
+try { const g = localStorage.getItem("receta_grupo"), n = localStorage.getItem("receta_nombre"); if(g) $("#grupo").value=g; if(n) $("#nombre").value=n; } catch(e){}
+
+$("#usarEjemplo").addEventListener("click", () => {
+  const g = $("#grupo").value;
+  if(!g){ $("#error").textContent = "Primero elija su grupo en el paso 1."; $("#grupo").focus(); return; }
+  $("#error").textContent = "";
+  $("#necesidad").value = CASOS.find(c=>c[0]===g)[2];
+});
+
+$("#copiarPlantilla").addEventListener("click", async () => {
+  let txt = PLANTILLA;
+  const nec = $("#necesidad").value.trim();
+  if (nec) txt = txt.replace("[pegue aquí la necesidad del usuario]", nec);
+  try { await navigator.clipboard.writeText(txt); $("#copiado").textContent = "¡Copiada! Péguela en Gemini, ChatGPT o Claude y complete los corchetes."; }
+  catch(e){ $("#prompt").value = txt; $("#copiado").textContent = "La plantilla quedó en la caja: cópiela desde ahí."; }
+});
+
+// Chips en vivo
+function chipsPrompt(){
+  const a = analizarPrompt($("#prompt").value);
+  const c = $("#liveChips"); c.textContent = "";
+  LETRAS.forEach(l => { const st=a.letras[l.k]; const ch=el("span",{class:"chip "+st,title:l.n+": "+st}); ch.appendChild(el("i",{},l.L||l.k)); ch.appendChild(document.createTextNode(l.n)); c.appendChild(ch); });
+}
+function chipsHistoria(){
+  const h = analizarHistoria($("#historia").value);
+  const c = $("#liveHist"); c.textContent = "";
+  [["Como… quiero… para…", h.formato],["Dado / Cuando / Entonces", h.gherkin],["Escenarios: "+h.escenarios, h.escenarios>0]].forEach(([n,ok]) => {
+    const ch = el("span",{class:"chip "+(ok?"presente":"")}); ch.appendChild(el("i",{},ok?"✓":"·")); ch.appendChild(document.createTextNode(n)); c.appendChild(ch);
+  });
+}
+$("#prompt").addEventListener("input", chipsPrompt);
+$("#historia").addEventListener("input", chipsHistoria);
+chipsPrompt(); chipsHistoria();
+
+// Autoevaluación
+AUTOCHECK.forEach(([g, items]) => {
+  $("#checks").appendChild(el("div",{class:"grp"},g.toUpperCase()));
+  items.forEach((it,i) => { const lab=el("label"); const cb=el("input",{type:"checkbox","data-i":g+i}); lab.appendChild(cb); lab.appendChild(el("span",{},it)); $("#checks").appendChild(lab); });
+});
+const selfScore = () => document.querySelectorAll("#checks input:checked").length;
+$("#checks").addEventListener("change", () => $("#selfScore").textContent = selfScore()+" / 10");
+
+// Pestañas
+function mostrar(vista){
+  const ent = vista==="entrega";
+  $("#tabEntrega").setAttribute("aria-selected", ent); $("#tabPanel").setAttribute("aria-selected", !ent);
+  $("#vEntrega").style.display = ent ? "block" : "none"; $("#panel").style.display = ent ? "none" : "block";
+  if(!ent) cargarPanel();
+}
+$("#tabEntrega").addEventListener("click", () => mostrar("entrega"));
+$("#tabPanel").addEventListener("click", () => mostrar("panel"));
+$("#verPanel").addEventListener("click", () => { mostrar("panel"); window.scrollTo({top:0}); });
+$("#mejorar").addEventListener("click", () => { $("#resultados").style.display="none"; $("#form").style.display="block"; $("#prompt").focus(); window.scrollTo({top:$("#prompt").getBoundingClientRect().top+scrollY-120}); });
+
+// Envío
+$("#form").addEventListener("submit", async ev => {
+  ev.preventDefault();
+  const datos = {
+    nombre: $("#nombre").value.trim(), grupo: $("#grupo").value, clave: $("#clave").value.trim().toUpperCase(),
+    necesidad: $("#necesidad").value.trim(), prompt: $("#prompt").value.trim(), historia: $("#historia").value.trim(),
+    autoevaluacion: selfScore()
+  };
+  const faltan = [];
+  if(!datos.nombre) faltan.push("su nombre"); if(!datos.grupo) faltan.push("su grupo");
+  if(!DEMO && !datos.clave) faltan.push("la clave de la clase");
+  if(datos.prompt.length < 40) faltan.push("su prompt completo");
+  if(datos.historia.length < 20) faltan.push("su mejor historia");
+  if(faltan.length){ $("#error").textContent = "Falta: " + faltan.join(", ") + "."; return; }
+  $("#error").textContent = "";
+  try { localStorage.setItem("receta_grupo", datos.grupo); localStorage.setItem("receta_nombre", datos.nombre); } catch(e){}
+
+  const caso = CASOS.find(c=>c[0]===datos.grupo);
+  datos.caso = caso ? caso[1] : "";
+  const ap = analizarPrompt(datos.prompt), ah = analizarHistoria(datos.historia);
+  const necEn = datos.necesidad && norm(datos.prompt).includes(norm(datos.necesidad).slice(0,40)) || /<\s*necesidad\s*>/i.test(datos.prompt);
+  const pts = puntaje(ap, ah, necEn);
+  datos.analisis = { letras: ap.letras, puntaje: pts, formatoHistoria: ah.formato, gherkin: ah.gherkin, falta: ap.falta || ah.falta };
+
+  pintarResultados(datos, ap, ah, pts, necEn);
+  await enviar(datos);
+});
+
+function anillo(pts){
+  const r=70, C=2*Math.PI*r, f=pts/10, col = pts>=8 ? "#7CC6B6" : (pts>=5 ? "#F0C060" : "#F09A72");
+  $("#ring").innerHTML = `<svg viewBox="0 0 170 170" aria-hidden="true"><circle cx="85" cy="85" r="${r}" fill="none" stroke="#183F3B" stroke-width="16"/><circle id="arc" cx="85" cy="85" r="${r}" fill="none" stroke="${col}" stroke-width="16" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C}" style="transition:stroke-dashoffset 1.2s cubic-bezier(.2,.8,.2,1)"/></svg><div class="v"><div><b id="ptsNum">0</b><span>de 10</span></div></div>`;
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{ $("#arc").style.strokeDashoffset = C*(1-f); }));
+  let k=0; const steps=30, tick=setInterval(()=>{ k++; $("#ptsNum").textContent = (pts*k/steps).toFixed(k===steps?1:0).replace(".",","); if(k>=steps) clearInterval(tick); }, 35);
+}
+
+function pintarResultados(d, ap, ah, pts, necEn){
+  $("#form").style.display = "none"; $("#resultados").style.display = "block";
+  window.scrollTo({top: $("#resultados").getBoundingClientRect().top + scrollY - 20});
+  anillo(pts);
+  const nivel = pts>=8 ? "¡Receta completa! Listo para el repositorio." : (pts>=5 ? "Buen avance: ajuste las letras en amarillo o rojo y vuelva a enviar." : "Vuelva a la plantilla: a su prompt le faltan varios ingredientes.");
+  $("#resTitulo").textContent = `${d.nombre.split(" ")[0]}, su diagnóstico`;
+  $("#resTexto").textContent = nivel;
+  const dif = Math.round((d.autoevaluacion - pts)*10)/10;
+  const cal = Math.abs(dif) <= 1.5 ? "Su autoevaluación coincide con el análisis." : (dif > 0 ? "Se calificó más alto que el análisis: revise con más rigor." : "Se calificó más bajo que el análisis: su prompt es mejor de lo que cree.");
+  const cmp = $("#compare"); cmp.textContent = "";
+  [["Portal", pts.toString().replace(".",",")+" / 10"],["Su autoevaluación", d.autoevaluacion+" / 10"],["Calibración", cal]].forEach(([a,b],i)=>{ const x=el("div"); if(i<2){ x.appendChild(el("b",{},b)); x.appendChild(document.createTextNode(a)); } else { x.style.maxWidth="320px"; x.textContent=b; } cmp.appendChild(x); });
+
+  const lt = $("#letters"); lt.textContent = "";
+  const textos = {presente:"Bien resuelta.", "débil":"Está, pero se puede precisar.", ausente:"No aparece en su prompt."};
+  LETRAS.forEach(l => {
+    const st = ap.letras[l.k]; const c = el("div",{class:"lc "+st});
+    const h = el("div",{class:"L"}); h.appendChild(el("b",{},l.L||l.k)); h.appendChild(el("span",{},l.n)); c.appendChild(h);
+    c.appendChild(el("div",{class:"st"}, st)); c.appendChild(el("p",{}, st==="presente" ? textos.presente : l.tip)); lt.appendChild(c);
+  });
+
+  const ex = $("#extra"); ex.textContent = "";
+  [[ah.formato,"Formato de historia","«Como… quiero… para…»"],
+   [ah.gherkin,"Criterios Gherkin", ah.gherkin ? `${ah.escenarios} escenario(s) con Dado, Cuando y Entonces.` : "Faltan Dado, Cuando o Entonces."],
+   [ap.delimitadores && necEn,"Datos delimitados", (ap.delimitadores ? "Usa etiquetas o separadores. " : "Encierre la necesidad entre <necesidad> y </necesidad>. ") + (necEn ? "" : "Incluya la necesidad dentro del prompt.")]
+  ].forEach(([ok,t,s]) => { const b=el("div",{class:"ex "+(ok?"ok":"no")}); b.appendChild(el("b",{},(ok?"✓ ":"✗ ")+t)); b.appendChild(document.createTextNode(s)); ex.appendChild(b); });
+
+  const tips = $("#tips"); tips.textContent = "";
+  const faltan = LETRAS.filter(l => ap.letras[l.k] !== "presente");
+  tips.appendChild(el("h3",{}, faltan.length ? "Para su versión 2, cambie una sola cosa a la vez:" : "Siguiente paso"));
+  const ol = el("ol");
+  if (faltan.length) faltan.slice(0,3).forEach(l => ol.appendChild(el("li",{}, `${l.L||l.k} · ${l.n}: ${l.tip}`)));
+  else ol.appendChild(el("li",{}, "Pruebe su prompt con otra necesidad de su caso y compare si las historias siguen cumpliendo INVEST."));
+  if (!ah.gherkin) ol.appendChild(el("li",{}, "Revise su historia: cada criterio debe tener Dado (situación), Cuando (acción) y Entonces (resultado)."));
+  tips.appendChild(ol);
+  tips.appendChild(el("p",{class:"priv"}, "El análisis es automático y orientativo: busca señales de cada letra en el texto. La revisión final la hace el docente."));
+}
+
+async function enviar(d){
+  const s = $("#sendState"); s.className = "sendState wait"; s.textContent = "Enviando su entrega…";
+  if (DEMO){
+    try { const arr = JSON.parse(localStorage.getItem("receta_demo")||"[]"); arr.push({...d, fecha:new Date().toISOString()}); localStorage.setItem("receta_demo", JSON.stringify(arr)); } catch(e){}
+    s.className = "sendState wait"; s.textContent = "Modo demostración: guardado solo en este navegador."; return;
+  }
+  try {
+    const r = await fetch(CONFIG.ENDPOINT, { method:"POST", body: JSON.stringify(d), redirect:"follow" }); // text/plain: sin preflight
+    const j = await r.json();
+    if (j.ok){ s.className="sendState ok"; s.textContent = `✓ Entrega recibida por el docente (intento ${j.intento}, código ${j.id}).`; }
+    else { s.className="sendState bad"; s.textContent = "✗ " + (j.mensaje || "No se pudo guardar.") + (j.error==="clave" ? " Pulse «Mejorar y volver a enviar» y corrija la clave." : ""); }
+  } catch(e){
+    // Respaldo: envío sin leer la respuesta
+    try { await fetch(CONFIG.ENDPOINT, { method:"POST", mode:"no-cors", body: JSON.stringify(d) }); s.className="sendState ok"; s.textContent = "✓ Entrega enviada. Si no aparece en el panel en un minuto, avise al docente."; }
+    catch(e2){ s.className="sendState bad"; s.textContent = "✗ Sin conexión. Copie su prompt y vuelva a intentarlo."; }
+  }
+}
+
+/* ================== PANEL ================== */
+let panelTimer = null;
+async function cargarPanel(){
+  clearTimeout(panelTimer);
+  let st;
+  try {
+    if (DEMO) st = estadisticasLocales();
+    else { const r = await fetch(CONFIG.ENDPOINT + "?accion=estadisticas", {redirect:"follow"}); st = await r.json(); }
+    pintarPanel(st);
+    $("#pUpd").textContent = (DEMO ? "Modo demostración · datos de este navegador · " : "Se actualiza solo cada " + CONFIG.REFRESCO_PANEL_SEG + " s · ") + "última actualización " + new Date().toLocaleTimeString("es-EC");
+  } catch(e){ $("#pUpd").textContent = "No se pudo cargar el panel. Reintentando…"; }
+  if ($("#panel").style.display === "block") panelTimer = setTimeout(cargarPanel, CONFIG.REFRESCO_PANEL_SEG*1000);
+}
+function estadisticasLocales(){
+  let arr=[]; try{ arr = JSON.parse(localStorage.getItem("receta_demo")||"[]"); }catch(e){}
+  const last = {}; arr.forEach(x=> last[x.nombre.toLowerCase()] = x); const u = Object.values(last), n = u.length || 1;
+  const val = {"presente":1,"débil":0.5,"ausente":0}, letras = {R:0,E:0,C:0,E2:0,T:0,A:0}, dist = Array(11).fill(0), grupos = {};
+  let sp=0, sa=0, gh=0;
+  u.forEach(x=>{ const p=x.analisis.puntaje; sp+=p; sa+=x.autoevaluacion; dist[Math.round(p)]++; if(x.analisis.gherkin) gh++;
+    for(const k in letras) letras[k]+=val[x.analisis.letras[k]];
+    grupos[x.grupo] = grupos[x.grupo] || {entregas:0,suma:0}; grupos[x.grupo].entregas++; grupos[x.grupo].suma+=p; });
+  for(const k in letras) letras[k] = Math.round(100*letras[k]/n);
+  const pg={}; for(const g in grupos) pg[g]={entregas:grupos[g].entregas, promedio:Math.round(10*grupos[g].suma/grupos[g].entregas)/10};
+  return {ok:true, personas:u.length, promedioPortal:u.length?Math.round(10*sp/n)/10:0, promedioAuto:u.length?Math.round(10*sa/n)/10:0, letras, gherkin:Math.round(100*gh/n), porGrupo:pg, distribucion:dist};
+}
+function pintarPanel(st){
+  const fmt = v => String(v).replace(".",",");
+  $("#kPersonas").textContent = st.personas; $("#kProm").textContent = st.personas ? fmt(st.promedioPortal) : "–";
+  $("#kAuto").textContent = st.personas ? fmt(st.promedioAuto) : "–"; $("#kGher").textContent = st.personas ? st.gherkin + "%" : "–";
+  const pl = $("#pLetras"); pl.textContent = "";
+  LETRAS.forEach((l,i) => { const v = st.letras[l.k]||0; const b = el("div",{class:"bar"+(i<3?" terra":"")});
+    b.appendChild(el("span",{},(l.L||l.k)+" · "+l.n)); const t=el("div",{class:"t"}); const fill=el("i"); fill.style.width="0%"; t.appendChild(fill); b.appendChild(t); b.appendChild(el("output",{},v+"%")); pl.appendChild(b);
+    requestAnimationFrame(()=>requestAnimationFrame(()=> fill.style.width = v+"%")); });
+  const h = $("#pHist"); h.textContent = ""; const mx = Math.max(1, ...st.distribucion);
+  st.distribucion.forEach((c,i) => { const d = el("div"); d.style.height = (c/mx*100)+"%"; d.appendChild(el("span",{},i)); if(c) d.appendChild(el("em",{},c)); h.appendChild(d); });
+  const tb = $("#pGrupos"); tb.textContent = "";
+  CASOS.forEach(c => { const g = st.porGrupo[c[0]]; const tr = el("tr"); [c[0], c[1], g?g.entregas:0, g?fmt(g.promedio):"–"].forEach(v=>tr.appendChild(el("td",{},v))); tb.appendChild(tr); });
+}
+</script>
+</body>
+</html>
